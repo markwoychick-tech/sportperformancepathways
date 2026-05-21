@@ -6,95 +6,92 @@
   <title>Sport Pathway Adventure Builder</title>
   <style>
     :root {
-      --bg: #f7f4ed;
-      --panel: #ffffff;
       --ink: #16324f;
       --muted: #627084;
+      --bg: #f7f4ed;
+      --card: #ffffff;
       --blue: #2468a9;
       --gold: #f3b233;
       --green: #3c9d6b;
-      --red: #d85c4a;
-      --purple: #7b5cc7;
       --teal: #2e9aa0;
+      --purple: #7b5cc7;
       --line: #d8d2c5;
       --shadow: 0 12px 28px rgba(22, 50, 79, 0.12);
-      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #fff8df 0, #f7f4ed 35%, #edf5f7 100%);
+      font-family: Arial, Helvetica, sans-serif;
       color: var(--ink);
+      background: linear-gradient(135deg, #fff8df, #edf5f7);
     }
 
     header {
-      padding: 28px 32px 18px;
       background: linear-gradient(135deg, #15395d, #1f6c8b);
       color: white;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      padding: 28px 32px 20px;
       box-shadow: var(--shadow);
     }
 
-    header h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 3vw, 3rem);
-      letter-spacing: -0.04em;
+    header h1 { margin: 0; font-size: 2.35rem; }
+    header p { max-width: 980px; margin: 10px 0 0; line-height: 1.5; }
+
+    .screen { padding: 22px; }
+
+    .panel, .sidebar, .workspace, .summary-panel {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
     }
 
-    header p {
-      max-width: 980px;
-      margin: 10px 0 0;
-      font-size: 1rem;
-      line-height: 1.5;
-      opacity: 0.94;
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: 340px minmax(0, 1fr);
-      gap: 22px;
+    .panel {
+      max-width: 1050px;
+      margin: 0 auto;
       padding: 22px;
     }
 
-    .sidebar, .workspace, .summary-panel {
-      background: rgba(255,255,255,0.86);
-      border: 1px solid rgba(216,210,197,0.9);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+    .choice-grid, .setup-grid, .status-grid, .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
     }
 
-    .sidebar {
-      padding: 18px;
-      align-self: start;
-      position: sticky;
-      top: 142px;
-      max-height: calc(100vh - 165px);
-      overflow: auto;
+    .choice-card, .setup-card, .status-card, .summary-box {
+      background: #fffdf8;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
     }
 
-    .section-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    .choice-card h3, .setup-card h3, .summary-box h3 { margin: 0 0 8px; }
+
+    .small-note, .choice-card p, .setup-card p, .status-card p {
       color: var(--muted);
-      font-weight: 800;
-      margin: 18px 0 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin: 0;
     }
 
-    .section-title:first-child { margin-top: 0; }
-
-    label {
-      display: block;
-      font-size: 0.83rem;
-      color: var(--muted);
+    button {
+      border: 0;
+      background: var(--ink);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
       font-weight: 700;
-      margin-bottom: 6px;
+      cursor: pointer;
+      margin: 4px 4px 4px 0;
     }
+
+    button:hover { transform: translateY(-1px); }
+    button.green { background: var(--green); }
+    button.secondary { background: #e6e1d8; color: var(--ink); }
+    button.gold { background: #c98613; }
+    button.red { background: #d85c4a; }
 
     select, input, textarea {
       width: 100%;
@@ -104,58 +101,31 @@
       padding: 10px 12px;
       color: var(--ink);
       font: inherit;
-      outline: none;
-    }
-
-    textarea { min-height: 74px; resize: vertical; }
-
-    .button-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    button {
-      border: 0;
-      background: var(--ink);
-      color: white;
-      padding: 10px 13px;
-      border-radius: 999px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.12s ease;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button.secondary { background: #e6e1d8; color: var(--ink); }
-    button.green { background: var(--green); }
-    button.gold { background: #c98613; }
-    button.red { background: var(--red); }
-
-    .legend {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
       margin-top: 8px;
     }
 
-    .legend span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      font-weight: 700;
-    }
+    textarea { min-height: 70px; resize: vertical; }
 
-    .dot { width: 11px; height: 11px; border-radius: 999px; display: inline-block; }
-
-    .card-bank {
+    .app {
       display: grid;
-      gap: 10px;
-      margin-top: 10px;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 22px;
+      padding: 22px;
     }
+
+    .sidebar { padding: 18px; align-self: start; }
+    .workspace { padding: 18px; }
+
+    .section-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 800;
+      margin: 18px 0 8px;
+    }
+
+    .card-bank { display: grid; gap: 10px; margin-top: 10px; }
 
     .card {
       background: white;
@@ -163,735 +133,787 @@
       border-left: 7px solid var(--blue);
       border-radius: 14px;
       padding: 11px 12px;
-      cursor: grab;
       box-shadow: 0 5px 14px rgba(22,50,79,0.08);
-      position: relative;
     }
 
-    .card:active { cursor: grabbing; }
-
-    .card h3 {
-      margin: 0 0 4px;
-      font-size: 0.95rem;
-      line-height: 1.2;
-    }
-
-    .card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.35;
-    }
+    .card h3 { margin: 0 0 5px; font-size: 0.95rem; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.35; }
 
     .type-existing { border-left-color: var(--blue); }
-    .type-experimental { border-left-color: var(--gold); }
+    .type-test { border-left-color: var(--gold); }
     .type-connector { border-left-color: var(--green); }
-    .type-barrier { border-left-color: var(--red); }
-    .type-custom { border-left-color: var(--purple); }
     .type-experience { border-left-color: var(--teal); }
+    .type-custom { border-left-color: var(--purple); }
 
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 8px;
+    .tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tag { font-size: 0.68rem; font-weight: 700; background: #eef2f4; border: 1px solid #dde5e8; padding: 3px 7px; border-radius: 999px; }
+
+    .selected-card {
+      border: 2px solid var(--green);
+      background: #eff9f3;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
     }
-
-    .tag {
-      font-size: 0.68rem;
-      font-weight: 800;
-      color: #203448;
-      background: #eef2f4;
-      border: 1px solid #dde5e8;
-      padding: 3px 7px;
-      border-radius: 999px;
-    }
-
-    .remove-card {
-      position: absolute;
-      right: 8px;
-      top: 8px;
-      background: transparent;
-      color: var(--muted);
-      border: none;
-      padding: 2px 6px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .dropzone .remove-card { display: block; }
-
-    .workspace {
-      padding: 18px;
-      overflow: hidden;
-    }
-
-    .setup {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .setup-card {
-      background: #fffdf8;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 14px;
-    }
-
-    .setup-card strong { display: block; margin-bottom: 5px; }
-    .setup-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.35; }
 
     .roadmap {
       display: grid;
       grid-template-columns: repeat(4, minmax(190px, 1fr));
       gap: 14px;
-      align-items: stretch;
     }
 
-    .stage {
-      min-height: 500px;
+    .throughline {
+      margin-top: 16px;
       background: #fbfaf6;
       border: 2px dashed #cfc8ba;
       border-radius: 18px;
       padding: 14px;
+    }
+
+    .throughline h2 { margin: 0; font-size: 1.1rem; }
+
+    .throughline-cards {
       display: flex;
-      flex-direction: column;
-    }
-
-    .stage.drag-over {
-      background: #eef8f0;
-      border-color: var(--green);
-    }
-
-    .stage h2 {
-      margin: 0;
-      font-size: 1.15rem;
-    }
-
-    .stage .prompt {
-      margin: 5px 0 12px;
-      color: var(--muted);
-      font-size: 0.8rem;
-      line-height: 1.35;
-      min-height: 42px;
-    }
-
-    .dropzone {
-      flex: 1;
-      display: grid;
       gap: 10px;
-      align-content: start;
-    }
-
-    .empty {
-      border: 1px dashed var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 0.83rem;
-    }
-
-    .summary-panel {
-      margin: 0 22px 24px;
-      padding: 18px;
-    }
-
-    .summary-panel h2 { margin: 0 0 10px; }
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .summary-box {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-      background: #fffdf8;
-    }
-
-    .summary-box h3 { margin: 0 0 6px; font-size: 0.95rem; }
-    .summary-box ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.83rem; }
-
-    #shareText {
+      flex-wrap: wrap;
       margin-top: 12px;
-      min-height: 140px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.78rem;
+      min-height: 90px;
     }
 
-    .filter-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    .throughline-cards .card {
+      width: min(280px, 100%);
     }
 
-    .small-note {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.35;
-      margin-top: 8px;
+    .stage {
+      min-height: 460px;
+      background: #fbfaf6;
+      border: 2px dashed #cfc8ba;
+      border-radius: 18px;
+      padding: 14px;
     }
+
+    .stage h2 { margin: 0; font-size: 1.1rem; }
+    .prompt { margin: 6px 0 12px; color: var(--muted); font-size: 0.8rem; line-height: 1.35; min-height: 42px; }
+    .stage-cards { display: grid; gap: 10px; }
+    .empty { border: 1px dashed var(--line); border-radius: 14px; padding: 14px; color: var(--muted); text-align: center; font-size: 0.83rem; }
+
+    .summary-panel { margin: 0 22px 24px; padding: 18px; }
+    #shareText { margin-top: 12px; min-height: 160px; font-family: monospace; font-size: 0.82rem; }
+    .summary-box ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.88rem; }
 
     @media print {
-      header, .sidebar, .button-row.no-print { display: none !important; }
+      header, .sidebar, #introFlow, .no-print { display: none !important; }
       body { background: white; }
       .app { display: block; padding: 0; }
       .workspace, .summary-panel { box-shadow: none; border: none; margin: 0; }
       .roadmap { grid-template-columns: repeat(4, 1fr); }
-      .stage { min-height: auto; break-inside: avoid; }
+      .stage { min-height: auto; }
     }
 
-    @media (max-width: 1250px) {
+    @media (max-width: 1100px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { position: static; max-height: none; }
-      .roadmap { grid-template-columns: repeat(4, minmax(180px, 1fr)); overflow-x: auto; padding-bottom: 8px; }
-      .stage { min-width: 180px; }
-      .setup, .summary-grid { grid-template-columns: 1fr 1fr; }
+      .roadmap { overflow-x: auto; grid-template-columns: repeat(4, minmax(210px, 1fr)); }
+      .stage { min-width: 210px; }
     }
 
     @media (max-width: 700px) {
-      header { position: static; }
-      .app { padding: 12px; }
-      .roadmap, .setup, .summary-grid { grid-template-columns: 1fr; }
-      .stage { min-height: 360px; }
+      .choice-grid, .setup-grid, .status-grid, .summary-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>Sport Pathway Adventure Builder</h1>
-    <p>This adventure is not about winning or building a perfect degree plan. It is about exploring possibilities, surfacing barriers, and imagining pathways that help students connect sport, learning, identity, and career. Build a journey, test ideas, and discover what Boise State might explore next.</p>
+    <p>This adventure is not about winning or building a perfect degree plan. It is about exploring possibilities, surfacing priorities, and imagining pathways that help students connect sport, learning, identity, and career.</p>
   </header>
 
-  <section id="introFlow" style="padding:22px;">
-    <div class="summary-panel" style="max-width:1100px;margin:0 auto;">
-      <h2>Start Your Adventure</h2>
-      <p class="small-note" style="font-size:0.95rem;max-width:850px;">Choose a starting challenge or opportunity. The system will suggest pathway ideas that fit your focus. You can always add, remove, or create your own cards later.</p>
+  <section id="introFlow" class="screen">
+    <div id="modeScreen" class="panel">
+      <h2>Choose Your Adventure</h2>
+      <p class="small-note">Pick one mode. Roadmap is for priorities and timing. Experience is for building student pathways from existing and future options.</p>
+      <div class="choice-grid">
+        <div class="choice-card">
+          <h3>Build the Roadmap</h3>
+          <p>Prioritize what Boise State should test, connect, or build next.</p>
+          <button id="roadmapButton" class="green">Play Roadmap</button>
+        </div>
+        <div class="choice-card">
+          <h3>Build the Experience</h3>
+          <p>Combine courses, certificates, connectors, and experiences into a student journey.</p>
+          <button id="experienceButton" class="green">Play Experience</button>
+        </div>
+      </div>
+    </div>
 
-      <div class="setup" style="margin-top:16px;">
+    <div id="setupScreen" class="panel" style="display:none;">
+      <h2 id="setupTitle">Set Up Your Adventure</h2>
+      <p id="setupDescription" class="small-note"></p>
+      <div id="studentTypeWrap" class="setup-grid" style="display:none;">
         <div class="setup-card">
-          <strong>1. Choose a persona</strong>
-          <select id="introPersona" style="margin-top:10px;">
+          <h3>Student type</h3>
+          <select id="studentType">
             <option>Student-athlete</option>
-            <option>Non-student athlete interested in sport</option>
-            <option>Transfer student</option>
-            <option>Working student / adult learner</option>
-            <option>Undecided freshman</option>
-          </select>
-        </div>
-
-        <div class="setup-card">
-          <strong>2. Choose a starting barrier</strong>
-          <select id="barrierStart" style="margin-top:10px;">
-            <option value="">None selected</option>
-            <option value="visibility">Students do not know where to start</option>
-            <option value="time">Athletes have limited time</option>
-            <option value="integration">Experiences feel disconnected</option>
-            <option value="career">Life after sport transition</option>
-            <option value="staffing">Limited staffing/support capacity</option>
-          </select>
-        </div>
-
-        <div class="setup-card">
-          <strong>3. Or choose an opportunity</strong>
-          <select id="opportunityStart" style="margin-top:10px;">
-            <option value="">None selected</option>
-            <option value="exploration">Expand exploration and belonging</option>
-            <option value="experience">Increase experiential learning</option>
-            <option value="career">Strengthen career readiness</option>
-            <option value="leadership">Build leadership pathways</option>
-            <option value="network">Expand mentoring and alumni networks</option>
-            <option value="reflection">Improve reflection and integration</option>
+            <option>Non-athlete interested in sport</option>
           </select>
         </div>
       </div>
-
-      <div class="setup" style="margin-top:18px;grid-template-columns:1fr;">
+      <div class="setup-grid" style="grid-template-columns:1fr;">
         <div class="setup-card">
-          <strong>Adventure title</strong>
-          <input id="adventureTitle" placeholder="Example: Career Transition Pathway" style="margin-top:10px;" />
-          <p class="small-note">Each roadmap should focus on one challenge or opportunity so pathways remain easy to compare and discuss.</p>
+          <h3>Adventure title</h3>
+          <input id="adventureTitle" placeholder="Example: Next 12 Months Roadmap">
+          <p class="small-note" style="margin-top:8px;">Keep each adventure focused so outcomes are easy to compare and discuss.</p>
         </div>
       </div>
-
-      <div class="button-row" style="margin-top:20px;">
-        <button class="green" onclick="beginAdventure()">Begin Adventure</button>
-      </div>
+      <button id="beginButton" class="green">Begin Adventure</button>
+      <button id="backButton" class="secondary">Back</button>
     </div>
   </section>
 
   <main class="app" id="builderApp" style="display:none;">
     <aside class="sidebar">
-      <div class="section-title">1. Choose a starting point</div>
-      <label for="persona">Student persona</label>
-      <select id="persona">
-        <option>Student-athlete</option>
-        <option>Non-student athlete interested in sport</option>
-        <option>Transfer student</option>
-        <option>Working student / adult learner</option>
-        <option>Undecided freshman</option>
-        <option>Custom persona</option>
+      <div class="section-title">How to build</div>
+      <p class="small-note">Select a card, then click the stage where it belongs. Add custom cards when something is missing.</p>
+      <div id="selectedCardBox" class="selected-card" style="display:none;"></div>
+
+      <div class="section-title">Browse cards</div>
+      <select id="typeFilter">
+        <option value="all">All cards</option>
+        <option value="existing" id="existingFilterOption">Existing Programs</option>
+        <option value="experience">Experiences</option>
+        <option value="test">Test Ideas</option>
+        <option value="connector">Connectors</option>
+        <option value="custom">Custom</option>
       </select>
+      <input id="searchCards" placeholder="Search cards">
 
-      <div class="section-title">Card legend</div>
-      <div class="legend">
-        <span><i class="dot" style="background:var(--blue)"></i> Existing</span>
-        <span><i class="dot" style="background:var(--gold)"></i> Test idea</span>
-        <span><i class="dot" style="background:var(--green)"></i> Unlock</span>
-        <span><i class="dot" style="background:var(--red)"></i> Barrier</span>
-        <span><i class="dot" style="background:var(--teal)"></i> Experience</span>
-        <span><i class="dot" style="background:var(--purple)"></i> Custom</span>
-      </div>
-
-      <div class="section-title">2. Filter cards</div>
-      <label for="lensFilter">Experience lens</label>
-      <select id="lensFilter">
-        <option value="all">All lenses</option>
-        <option value="exploration">Explore sport pathways</option>
-        <option value="belonging">Belonging and navigation</option>
-        <option value="skills">Build transferable skills</option>
-        <option value="career">Career readiness / life after sport</option>
-        <option value="experience">Applied experience</option>
-        <option value="reflection">Reflection and integration</option>
-        <option value="leadership">Leadership and coaching</option>
-        <option value="network">Mentoring and networks</option>
-        <option value="barrier">Barriers / constraints</option>
-      </select>
-      <div class="filter-row" style="margin-top:8px;">
-        <select id="typeFilter">
-          <option value="all">All card types</option>
-          <option value="existing">Existing</option>
-          <option value="experimental">Test ideas</option>
-          <option value="connector">Unlocks</option>
-          <option value="barrier">Barriers</option>
-          <option value="experience">Experiences</option>
-          <option value="custom">Custom</option>
-        </select>
-        <input id="searchCards" placeholder="Search cards" />
-      </div>
-      <p class="small-note">Use the experience lens first when you want to build around a purpose, then narrow by card type if helpful.</p>
-
-      <div class="section-title">3. Add your own card</div>
-      <label for="customTitle">Card title</label>
-      <input id="customTitle" placeholder="Example: Athlete Career Navigator" />
-      <label for="customType" style="margin-top:8px;">Card type</label>
+      <div class="section-title">Add your own card</div>
+      <input id="customTitle" placeholder="Card title">
       <select id="customType">
         <option value="custom">Custom</option>
-        <option value="experimental">Test idea</option>
-        <option value="connector">Unlock / connector</option>
-        <option value="barrier">Barrier / constraint</option>
+        <option value="test">Test Idea</option>
+        <option value="connector">Connector</option>
         <option value="experience">Experience</option>
-        <option value="existing">Existing opportunity</option>
+        <option value="existing">Existing Program</option>
       </select>
-      <label for="customDesc" style="margin-top:8px;">Description</label>
       <textarea id="customDesc" placeholder="What problem does this solve or what opportunity does it create?"></textarea>
-      <label for="customTags" style="margin-top:8px;">Tags / barriers addressed</label>
-      <input id="customTags" placeholder="Example: time, advising, career, belonging" />
-      <div class="button-row">
-        <button class="green" onclick="addCustomCard()">Add card</button>
-        <button class="secondary" onclick="clearCustomForm()">Clear</button>
-      </div>
+      <input id="customTags" placeholder="Tags, separated by commas">
+      <button id="addCustomButton" class="green">Add card</button>
+      <button id="clearCustomButton" class="secondary">Clear</button>
 
-      <div class="section-title">Suggested cards</div>
-      <p class="small-note" id="suggestionText">Cards will be suggested based on your selected challenge or opportunity.</p>
+      <div class="section-title">Cards</div>
       <div id="cardBank" class="card-bank"></div>
     </aside>
 
-    <section class="workspace" id="captureArea">
-      <div class="setup">
-        <div class="setup-card">
-          <strong>Prompt</strong>
-          <p>What should students experience at each stage to explore sport, build skills, and connect to career or life after sport?</p>
-        </div>
-        <div class="setup-card">
-          <strong>Design goal</strong>
-          <p>Use cards to create a coherent journey. Add barriers where they appear and unlock cards where support is needed.</p>
-        </div>
-        <div class="setup-card">
-          <strong>Adventure</strong>
-          <p id="adventureDisplay">Untitled Adventure</p>
-          <p id="personaDisplay">Student-athlete</p>
-        </div>
+    <section class="workspace">
+      <div class="status-grid">
+        <div class="status-card"><strong>Mode</strong><p id="modeDisplay">Roadmap</p></div>
+        <div class="status-card"><strong>Viewpoint</strong><p id="viewpointDisplay">Institutional view</p></div>
+        <div class="status-card"><strong>Adventure</strong><p id="adventureDisplay">Untitled</p></div>
       </div>
-
-      <div class="roadmap">
-        <div class="stage" data-stage="Freshman">
-          <h2>Freshman</h2>
-          <div class="prompt">Connect, belong, explore, and discover what sport can mean beyond participation.</div>
-          <div class="dropzone" id="stage-Freshman"><div class="empty">Drag cards here</div></div>
-        </div>
-        <div class="stage" data-stage="Sophomore">
-          <h2>Sophomore</h2>
-          <div class="prompt">Build direction, name transferable skills, and connect experiences to academic options.</div>
-          <div class="dropzone" id="stage-Sophomore"><div class="empty">Drag cards here</div></div>
-        </div>
-        <div class="stage" data-stage="Junior">
-          <h2>Junior</h2>
-          <div class="prompt">Deepen experience through applied work, leadership, internships, projects, and networks.</div>
-          <div class="dropzone" id="stage-Junior"><div class="empty">Drag cards here</div></div>
-        </div>
-        <div class="stage" data-stage="Senior">
-          <h2>Senior</h2>
-          <div class="prompt">Translate sport experience into career identity, portfolio evidence, and next-step plans.</div>
-          <div class="dropzone" id="stage-Senior"><div class="empty">Drag cards here</div></div>
-        </div>
+      <div class="roadmap" id="board"></div>
+      <div id="throughlineSection" class="throughline" style="display:none;">
+        <h2>Across the Student Journey</h2>
+        <div class="prompt">Use this area for connectors, experiences, or supports that span multiple years instead of belonging to only one stage.</div>
+        <div id="throughlineCards" class="throughline-cards"></div>
+      </div>
+      <div class="no-print" style="margin-top:16px;">
+        <button id="shareButton" class="green">Share / Export</button>
+        <button id="newButton" class="secondary">Start New Adventure</button>
+        <button id="resetButton" class="red">Reset Board</button>
       </div>
     </section>
   </main>
 
-  <section class="summary-panel">
-    <h2>Shareable Roadmap Summary</h2>
-    <p class="small-note">Use this section after building your pathway. Copy the summary into a shared document, download it, print to PDF, or take a screenshot of the roadmap above.</p>
-    <div class="button-row no-print">
-      <button class="green" onclick="startNewAdventure()">Start New Adventure</button>
-      <button onclick="generateSummary()">Generate summary</button>
-      <button class="secondary" onclick="copySummary()">Copy summary</button>
-      <button class="secondary" onclick="downloadSummary()">Download .txt</button>
-      <button class="gold" onclick="window.print()">Print / Save PDF</button>
-      <button class="red" onclick="resetBoard()">Reset board</button>
+  <section class="summary-panel" id="summaryPanel" style="display:none;">
+    <h2>Shareable Summary</h2>
+    <p class="small-note">Use this after building your adventure. Copy the summary, download it, print to PDF, or take a screenshot of the board above.</p>
+    <div class="no-print">
+      <button id="refreshSummaryButton">Refresh summary</button>
+      <button id="copySummaryButton" class="secondary">Copy summary</button>
+      <button id="downloadSummaryButton" class="secondary">Download text</button>
+      <button id="printButton" class="gold" onclick="printCurrentPage()">Print / Save PDF</button>
+      <button id="printViewButton" class="gold">Open Print-Friendly View</button>
     </div>
-    <textarea id="shareText" readonly placeholder="Your pathway summary will appear here."></textarea>
+    <textarea id="shareText" readonly placeholder="Your summary will appear here."></textarea>
     <div class="summary-grid" id="summaryGrid"></div>
   </section>
 
   <script>
-    const initialCards = [
-      { title: "Sport Impact Certificate", type: "existing", desc: "Stackable certificate launching with a sport impact focus.", tags: ["certificate", "visibility", "pathway"], lenses: ["exploration", "skills", "career"] },
-      { title: "Sport-Integrated Learning", type: "connector", desc: "Course or model that helps students turn sport experiences into reflection, skill evidence, and career language.", tags: ["reflection", "career", "integration"], lenses: ["reflection", "career", "skills"] },
-      { title: "TEAMS Certificate", type: "existing", desc: "Existing IPS/BAS certificate with potential sport pathway connections.", tags: ["teamwork", "leadership", "existing"] },
-      { title: "Sport Information", type: "existing", desc: "Comm/Media opportunity connected to sport communication and information pathways.", tags: ["media", "communication"] },
-      { title: "eSports Certificate", type: "existing", desc: "Existing Ed Tech certificate that may connect to sport, gaming, media, and technology interests.", tags: ["technology", "gaming"] },
-      { title: "Sport Coaching Certificate", type: "existing", desc: "Kinesiology certificate connected to coaching, development, and leadership.", tags: ["coaching", "leadership"] },
-      { title: "COID 493 Internship", type: "experience", desc: "Internship structure that could support applied sport-related learning.", tags: ["internship", "career"] },
-      { title: "ACAD 101", type: "existing", desc: "Incoming student course that could introduce sport pathways earlier.", tags: ["freshman", "onboarding"] },
-      { title: "Bronco 197", type: "existing", desc: "Incoming athlete course that could introduce student-athletes to sport pathway options.", tags: ["athletes", "onboarding"] },
-      { title: "Sports Passport", type: "experimental", desc: "Passport-style exploration model inspired by Digital Passport and Arts Passport.", tags: ["discovery", "visibility", "exploration"] },
-      { title: "University Foundations Connection", type: "experimental", desc: "Use UF courses to connect sport, identity, community, and career exploration.", tags: ["freshman", "integration"] },
-      { title: "Vertically Integrated Projects", type: "experience", desc: "VIPs could provide multi-year applied projects connected to sport, data, media, health, or community impact.", tags: ["project", "research", "experience"] },
-      { title: "Credit for Prior Learning", type: "connector", desc: "Recognize relevant experience and reduce friction for students with existing skills or applied sport backgrounds.", tags: ["time", "credit", "access"] },
-      { title: "Bronco Link", type: "connector", desc: "Alumni network connection point for mentoring, internships, and career conversations.", tags: ["mentoring", "network", "career"] },
-      { title: "Shift Group / Life After Sports Pilot", type: "experimental", desc: "Potential pilot for seniors focused on career transition, networking, and identity after sport.", tags: ["career", "senior", "transition"] },
-      { title: "Reflection Portfolio", type: "connector", desc: "Collect evidence of skills, experiences, and growth across sport, coursework, internships, and leadership.", tags: ["reflection", "portfolio", "career"] },
-      { title: "Athlete Career Design Lab", type: "experimental", desc: "Workshop or course sequence helping athletes prototype career paths and translate sport experience.", tags: ["career", "identity", "prototyping"] },
-      { title: "Community Engagement Leadership", type: "experience", desc: "Campus or community leadership experiences connected to sport, service, and civic impact.", tags: ["leadership", "community"] },
-      { title: "Internship / Practicum Pathway", type: "experience", desc: "Applied placement that helps students test interests and build career evidence.", tags: ["internship", "experience"] },
-      { title: "Peer Mentor Network", type: "connector", desc: "Students help other students find options, reflect on experiences, and navigate the pathway.", tags: ["staffing", "belonging", "navigation"] },
-      { title: "Too many demands on athletes", type: "barrier", desc: "Student-athletes are pulled in many directions and may struggle to add anything else.", tags: ["time", "athletes"] },
-      { title: "Limited Bronco Life staffing", type: "barrier", desc: "Small staff supports hundreds of student-athletes, limiting individualized navigation capacity.", tags: ["staffing", "scale"] },
-      { title: "Students do not know where to start", type: "barrier", desc: "Opportunities may exist, but students may not know what to try or where to go.", tags: ["visibility", "advising"] },
-      { title: "Hard to fit into degree plans", type: "barrier", desc: "Credits, timing, prerequisites, and major requirements can make participation difficult.", tags: ["credits", "advising", "time"] },
-      { title: "Disconnected opportunities", type: "barrier", desc: "Programs, courses, and experiences may exist but not yet feel like a coherent ecosystem.", tags: ["integration", "visibility"] }
+    var CARDS = [
+      { title: 'Sports Passport', type: 'test', modes: ['roadmap', 'experience'], desc: 'Passport-style exploration model that could help students discover opportunities and track participation.', tags: ['visibility', 'exploration'] },
+      { title: 'Shift Group / Life After Sports Pilot', type: 'test', modes: ['roadmap', 'experience'], desc: 'Potential senior-focused pilot for career transition, networking, and identity after sport.', tags: ['career', 'transition'] },
+      { title: 'Bronco Link Expansion', type: 'connector', modes: ['roadmap', 'experience'], desc: 'Alumni connections for mentoring, internships, and career conversations.', tags: ['network', 'career'] },
+      { title: 'Map Existing Sport Opportunities', type: 'test', modes: ['roadmap'], desc: 'Create a clearer inventory of current programs, courses, certificates, and experiences.', tags: ['visibility', 'mapping'] },
+      { title: 'Meet with Bronco Life about SDF', type: 'test', modes: ['roadmap'], desc: 'Near-term working session to connect Sport Impact planning with student-athlete support needs.', tags: ['partnership', 'pilot'] },
+      { title: 'Sport Impact Certificate', type: 'existing', modes: ['experience'], desc: 'Stackable certificate launching with a sport impact focus.', tags: ['certificate', 'pathway'] },
+      { title: 'Sport-Integrated Learning', type: 'connector', modes: ['experience'], desc: 'Bridge course or model that helps students translate sport experiences into reflection, skills, and career evidence.', tags: ['reflection', 'career'] },
+      { title: 'TEAMS Certificate', type: 'existing', modes: ['experience'], desc: 'Existing certificate with potential sport pathway connections.', tags: ['teamwork', 'leadership'] },
+      { title: 'Sport Information and Culture', type: 'existing', modes: ['experience'], desc: 'Communication, media, and culture opportunity connected to sport information pathways.', tags: ['media', 'communication', 'culture'] },
+      { title: 'eSports Certificate', type: 'existing', modes: ['experience'], desc: 'Existing certificate connecting sport, gaming, media, and technology interests.', tags: ['technology', 'gaming'] },
+      { title: 'Sport Coaching Certificate', type: 'existing', modes: ['experience'], desc: 'Certificate connected to coaching, development, and leadership.', tags: ['coaching', 'leadership'] },
+      { title: 'COID 493 Internship', type: 'experience', modes: ['experience'], desc: 'Internship structure that could support applied sport-related learning.', tags: ['internship', 'career'] },
+      { title: 'ACAD 101', type: 'existing', modes: ['experience'], desc: 'Incoming student course that could introduce sport pathways earlier.', tags: ['freshman', 'onboarding'] },
+      { title: 'Bronco 197', type: 'existing', modes: ['experience'], desc: 'Incoming athlete course that could introduce student-athletes to sport pathway options.', tags: ['athletes', 'onboarding'] },
+      { title: 'University Foundations Connection', type: 'test', modes: ['roadmap', 'experience'], desc: 'Use UF courses to connect sport, identity, community, and career exploration.', tags: ['integration', 'exploration'] },
+      { title: 'Vertically Integrated Projects', type: 'experience', modes: ['roadmap', 'experience'], desc: 'Multi-year applied projects connected to sport, data, media, health, or community impact.', tags: ['project', 'experience'] },
+      { title: 'Credit for Prior Learning', type: 'connector', modes: ['experience'], desc: 'Recognize relevant experience and reduce friction for students with existing skills or applied backgrounds.', tags: ['credit', 'access'] },
+      { title: 'Internship / Practicum Pathway', type: 'experience', modes: ['experience'], desc: 'Applied placement that helps students test interests and build career evidence.', tags: ['internship', 'experience'] },
+      { title: 'Peer Mentor Network', type: 'connector', modes: ['roadmap', 'experience'], desc: 'Students help other students find options, reflect on experiences, and navigate the pathway.', tags: ['mentoring', 'navigation'] }
     ];
 
-    let cardId = 0;
-    const cardBank = document.getElementById('cardBank');
-    const typeFilter = document.getElementById('typeFilter');
-    const lensFilter = document.getElementById('lensFilter');
-    const searchCards = document.getElementById('searchCards');
-    const persona = document.getElementById('persona');
-    let currentAdventureTitle = 'Untitled Adventure';
-    const introPersona = document.getElementById('introPersona');
-    const personaDisplay = document.getElementById('personaDisplay');
+    var STAGES = {
+      roadmap: [
+        ['Next 6 Months', 'Quick wins, pilots, visibility, and relationship building.'],
+        ['Next 1 Year', 'Partnerships, integration, and next-stage development.'],
+        ['Next 18 Months', 'Scale successful pilots and build larger infrastructure.'],
+        ['Beyond', 'Long-term ecosystem growth and future possibilities.']
+      ],
+      experience: [
+        ['Freshman', 'Connect, belong, explore, and discover sport pathways.'],
+        ['Sophomore', 'Build direction and connect experiences to academic options.'],
+        ['Junior', 'Deepen experience through applied work, leadership, internships, projects, and networks.'],
+        ['Senior', 'Translate sport experience into career identity, portfolio evidence, and next-step plans.']
+      ]
+    };
 
-    function typeClass(type) { return `type-${type}`; }
+    var currentMode = 'roadmap';
+    var currentTitle = 'Untitled Roadmap';
+    var currentViewpoint = 'Institutional view';
+    var selectedCard = null;
+    var board = [[], [], [], []];
+    var throughlineBoard = [];
+
+    function $(id) { return document.getElementById(id); }
 
     function typeLabel(type) {
-      return {
-        existing: 'Existing',
-        experimental: 'Test idea',
-        connector: 'Unlock',
-        barrier: 'Barrier',
-        custom: 'Custom',
-        experience: 'Experience'
-      }[type] || 'Card';
+      var labels = {
+        existing: 'Existing Program',
+        experience: 'Experience',
+        test: 'Test Idea',
+        connector: 'Connector',
+        custom: 'Custom'
+      };
+      return labels[type] || 'Card';
     }
 
-    function createCardElement(card, fromBank = true) {
-      const el = document.createElement('div');
-      el.className = `card ${typeClass(card.type)}`;
-      el.draggable = true;
-      el.dataset.title = card.title;
-      el.dataset.type = card.type;
-      el.dataset.desc = card.desc;
-      el.dataset.tags = JSON.stringify(card.tags || []);
-      el.dataset.id = `card-${cardId++}`;
-      el.innerHTML = `
-        <button class="remove-card" title="Remove" onclick="removeCard(event)">×</button>
-        <h3>${escapeHtml(card.title)}</h3>
-        <p><strong>${typeLabel(card.type)}:</strong> ${escapeHtml(card.desc)}</p>
-        <div class="tags">${(card.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
-      `;
-
-      el.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-          title: el.dataset.title,
-          type: el.dataset.type,
-          desc: el.dataset.desc,
-          tags: JSON.parse(el.dataset.tags),
-          fromBank
-        }));
-      });
-      return el;
+    function openMode(mode) {
+      currentMode = mode;
+      $('modeScreen').style.display = 'none';
+      $('setupScreen').style.display = 'block';
+      $('studentTypeWrap').style.display = mode === 'experience' ? 'grid' : 'none';
+      $('setupTitle').textContent = mode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience';
+      $('setupDescription').textContent = mode === 'roadmap'
+        ? 'Place ideas across the timeline to show what Boise State should prioritize next.'
+        : 'Choose a student type, then build a possible sport-connected student journey.';
+      $('adventureTitle').value = '';
+      $('adventureTitle').placeholder = mode === 'roadmap' ? 'Example: Next 12 Months Roadmap' : 'Example: Student-Athlete Career Pathway';
     }
 
-    let activeLens = 'all';
+    function backToStart() {
+      $('setupScreen').style.display = 'none';
+      $('modeScreen').style.display = 'block';
+    }
 
     function beginAdventure() {
-      const selectedBarrier = document.getElementById('barrierStart').value;
-      const selectedOpportunity = document.getElementById('opportunityStart').value;
-      const focus = selectedOpportunity || selectedBarrier || 'exploration';
+      updateTypeFilterOptions();
+      currentTitle = $('adventureTitle').value.trim();
+      if (!currentTitle) currentTitle = currentMode === 'roadmap' ? 'Untitled Roadmap' : 'Untitled Experience';
+      currentViewpoint = currentMode === 'experience' ? $('studentType').value : 'Institutional view';
+      selectedCard = null;
+      board = [[], [], [], []];
+      throughlineBoard = [];
 
-      activeLens = focus;
-      lensFilter.value = focus;
-      persona.value = introPersona.value;
-      personaDisplay.textContent = introPersona.value;
-
-      currentAdventureTitle = document.getElementById('adventureTitle').value.trim() || 'Untitled Adventure';
-      document.getElementById('adventureDisplay').textContent = currentAdventureTitle;
-
-      document.getElementById('introFlow').style.display = 'none';
-      document.getElementById('builderApp').style.display = 'grid';
-
-      const readableFocus = selectedOpportunity
-        ? document.getElementById('opportunityStart').selectedOptions[0].text
-        : selectedBarrier
-        ? document.getElementById('barrierStart').selectedOptions[0].text
-        : 'Explore sport pathways';
-
-      document.getElementById('suggestionText').innerHTML = `<strong>Starting focus:</strong> ${escapeHtml(readableFocus)}. Suggested cards below are intended to help participants begin quickly without sorting through every option.`;
-
-      renderBank();
-      generateSummary();
+      $('introFlow').style.display = 'none';
+      $('builderApp').style.display = 'grid';
+      $('summaryPanel').style.display = 'none';
+      $('modeDisplay').textContent = currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience';
+      $('viewpointDisplay').textContent = currentViewpoint;
+      $('adventureDisplay').textContent = currentTitle;
+      updateSelectedBox();
+      renderBoard();
+      renderThroughline();
+      renderCardBank();
     }
 
-    function renderBank() {
-      cardBank.innerHTML = '';
-      const type = typeFilter.value;
-      const lens = activeLens !== 'all' ? activeLens : lensFilter.value;
-      const query = searchCards.value.trim().toLowerCase();
-      cardBank.insertAdjacentHTML('beforeend', lens !== 'all' ? `<div class="small-note"><strong>${escapeHtml(lensFilter.options[lensFilter.selectedIndex].text)}:</strong> showing cards that best fit this purpose.</div>` : '');
-      initialCards.forEach(card => {
-        const haystack = [card.title, card.type, card.desc, ...(card.tags || []), ...(card.lenses || [])].join(' ').toLowerCase();
-        const matchesType = type === 'all' || card.type === type;
-        const matchesLens = lens === 'all' || (card.lenses || inferLenses(card)).includes(lens);
-        const matchesSearch = !query || haystack.includes(query);
-        if (matchesType && matchesLens && matchesSearch) cardBank.appendChild(createCardElement(card, true));
+    function updateSelectedBox() {
+      var box = $('selectedCardBox');
+      if (!selectedCard) {
+        box.style.display = 'none';
+        box.textContent = '';
+        return;
+      }
+      box.style.display = 'block';
+      box.textContent = 'Selected: ' + selectedCard.title + '. Click a stage to place it.';
+    }
+
+    function updateTypeFilterOptions() {
+      var option = $('existingFilterOption');
+      if (!option) return;
+      option.style.display = currentMode === 'roadmap' ? 'none' : 'block';
+      if (currentMode === 'roadmap' && $('typeFilter').value === 'existing') {
+        $('typeFilter').value = 'all';
+      }
+    }
+
+    function renderCardBank() {
+      updateTypeFilterOptions();
+      var bank = $('cardBank');
+      var filter = $('typeFilter').value;
+      var search = $('searchCards').value.toLowerCase();
+      bank.textContent = '';
+
+      var count = 0;
+      CARDS.forEach(function(card) {
+        var modeOk = card.modes.indexOf(currentMode) >= 0;
+        var typeOk = filter === 'all' || card.type === filter;
+        var searchText = (card.title + ' ' + card.desc + ' ' + card.tags.join(' ')).toLowerCase();
+        var searchOk = !search || searchText.indexOf(search) >= 0;
+        if (modeOk && typeOk && searchOk) {
+          bank.appendChild(makeCardElement(card, true));
+          count += 1;
+        }
       });
+
+      if (count === 0) {
+        var msg = document.createElement('p');
+        msg.className = 'small-note';
+        msg.textContent = 'No cards match this filter. Try another group or add a custom card.';
+        bank.appendChild(msg);
+      }
+    }
+
+    function makeCardElement(card, selectable) {
+      var div = document.createElement('div');
+      div.className = 'card type-' + card.type;
+      if (selectable) {
+        div.draggable = true;
+        div.addEventListener('dragstart', function(event) {
+          event.dataTransfer.setData('text/plain', JSON.stringify(card));
+        });
+      }
+
+      var h = document.createElement('h3');
+      h.textContent = card.title;
+      div.appendChild(h);
+
+      var p = document.createElement('p');
+      p.textContent = typeLabel(card.type) + ': ' + card.desc;
+      div.appendChild(p);
+
+      var tagRow = document.createElement('div');
+      tagRow.className = 'tag-row';
+      card.tags.forEach(function(tag) {
+        var span = document.createElement('span');
+        span.className = 'tag';
+        span.textContent = tag;
+        tagRow.appendChild(span);
+      });
+      div.appendChild(tagRow);
+
+      if (selectable) {
+        var selectButton = document.createElement('button');
+        selectButton.className = 'secondary';
+        selectButton.textContent = 'Select card';
+        selectButton.addEventListener('click', function() {
+          selectedCard = card;
+          updateSelectedBox();
+        });
+        div.appendChild(selectButton);
+      } else {
+        var removeButton = document.createElement('button');
+        removeButton.className = 'secondary';
+        removeButton.textContent = 'Remove';
+        removeButton.addEventListener('click', function(event) {
+          event.stopPropagation();
+          removeCard(card.id);
+        });
+        div.appendChild(removeButton);
+      }
+      return div;
+    }
+
+    function renderThroughline() {
+      var section = $('throughlineSection');
+      var list = $('throughlineCards');
+      if (currentMode !== 'experience') {
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      list.textContent = '';
+      if (throughlineBoard.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'Select or drag cards here if they span the full student journey.';
+        list.appendChild(empty);
+      } else {
+        throughlineBoard.forEach(function(card) {
+          list.appendChild(makeCardElement(card, false));
+        });
+      }
+
+      section.ondragover = function(event) {
+        event.preventDefault();
+        section.style.borderColor = 'var(--green)';
+        section.style.background = '#eef8f0';
+      };
+      section.ondragleave = function() {
+        section.style.borderColor = '#cfc8ba';
+        section.style.background = '#fbfaf6';
+      };
+      section.ondrop = function(event) {
+        event.preventDefault();
+        section.style.borderColor = '#cfc8ba';
+        section.style.background = '#fbfaf6';
+        var droppedCard = JSON.parse(event.dataTransfer.getData('text/plain'));
+        placeThroughlineCard(droppedCard);
+      };
+      section.onclick = function() {
+        if (selectedCard) {
+          placeThroughlineCard(selectedCard);
+          selectedCard = null;
+          updateSelectedBox();
+        }
+      };
+    }
+
+    function renderBoard() {
+      var container = $('board');
+      container.textContent = '';
+      STAGES[currentMode].forEach(function(stage, index) {
+        var column = document.createElement('div');
+        column.className = 'stage';
+        column.addEventListener('click', function() { placeCard(index); });
+        column.addEventListener('dragover', function(event) {
+          event.preventDefault();
+          column.style.borderColor = 'var(--green)';
+          column.style.background = '#eef8f0';
+        });
+        column.addEventListener('dragleave', function() {
+          column.style.borderColor = '#cfc8ba';
+          column.style.background = '#fbfaf6';
+        });
+        column.addEventListener('drop', function(event) {
+          event.preventDefault();
+          column.style.borderColor = '#cfc8ba';
+          column.style.background = '#fbfaf6';
+          var droppedCard = JSON.parse(event.dataTransfer.getData('text/plain'));
+          placeSpecificCard(index, droppedCard);
+        });
+
+        var h = document.createElement('h2');
+        h.textContent = stage[0];
+        column.appendChild(h);
+
+        var p = document.createElement('div');
+        p.className = 'prompt';
+        p.textContent = stage[1];
+        column.appendChild(p);
+
+        var list = document.createElement('div');
+        list.className = 'stage-cards';
+        if (board[index].length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = 'Select a card, then click here.';
+          list.appendChild(empty);
+        } else {
+          board[index].forEach(function(card) {
+            list.appendChild(makeCardElement(card, false));
+          });
+        }
+        column.appendChild(list);
+        container.appendChild(column);
+      });
+    }
+
+    function placeCard(index) {
+      if (!selectedCard) return;
+      placeSpecificCard(index, selectedCard);
+      selectedCard = null;
+      updateSelectedBox();
+    }
+
+    function placeThroughlineCard(sourceCard) {
+      if (currentMode !== 'experience') return;
+      var placed = {
+        id: String(Date.now()) + String(Math.random()),
+        title: sourceCard.title,
+        type: sourceCard.type,
+        desc: sourceCard.desc,
+        tags: sourceCard.tags.slice(),
+        modes: sourceCard.modes.slice()
+      };
+      throughlineBoard.push(placed);
+      renderThroughline();
+    }
+
+    function placeSpecificCard(index, sourceCard) {
+      var placed = {
+        id: String(Date.now()) + String(Math.random()),
+        title: sourceCard.title,
+        type: sourceCard.type,
+        desc: sourceCard.desc,
+        tags: sourceCard.tags.slice(),
+        modes: sourceCard.modes.slice()
+      };
+      board[index].push(placed);
+      renderBoard();
+    }
+
+    function removeCard(id) {
+      board = board.map(function(list) {
+        return list.filter(function(card) { return card.id !== id; });
+      });
+      throughlineBoard = throughlineBoard.filter(function(card) { return card.id !== id; });
+      renderBoard();
+      renderThroughline();
     }
 
     function addCustomCard() {
-      const title = document.getElementById('customTitle').value.trim();
-      const type = document.getElementById('customType').value;
-      const desc = document.getElementById('customDesc').value.trim() || 'Participant-generated idea.';
-      const tags = document.getElementById('customTags').value.split(',').map(t => t.trim()).filter(Boolean);
-      if (!title) return alert('Add a card title first.');
-      initialCards.unshift({ title, type, desc, tags: tags.length ? tags : ['custom'], lenses: inferLenses({ type, tags }) });
-      clearCustomForm();
-      renderBank();
+      var title = $('customTitle').value.trim();
+      if (!title) return;
+      var tags = $('customTags').value.split(',').map(function(tag) { return tag.trim(); }).filter(Boolean);
+      if (tags.length === 0) tags = ['custom'];
+      var card = {
+        title: title,
+        type: $('customType').value,
+        modes: [currentMode],
+        desc: $('customDesc').value.trim() || 'Participant-generated idea.',
+        tags: tags
+      };
+      CARDS.unshift(card);
+      $('customTitle').value = '';
+      $('customDesc').value = '';
+      $('customTags').value = '';
+      $('customType').value = 'custom';
+      renderCardBank();
     }
 
-    function clearCustomForm() {
-      document.getElementById('customTitle').value = '';
-      document.getElementById('customType').value = 'custom';
-      document.getElementById('customDesc').value = '';
-      document.getElementById('customTags').value = '';
+    function clearCustomCardForm() {
+      $('customTitle').value = '';
+      $('customDesc').value = '';
+      $('customTags').value = '';
+      $('customType').value = 'custom';
     }
 
-    function removeCard(event) {
-      event.stopPropagation();
-      const card = event.target.closest('.card');
-      const zone = card.parentElement;
-      card.remove();
-      ensureEmptyState(zone);
-      generateSummary();
-    }
-
-    function ensureEmptyState(zone) {
-      if (!zone) return;
-      const hasCards = zone.querySelector('.card');
-      let empty = zone.querySelector('.empty');
-      if (!hasCards && !empty) {
-        empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'Drag cards here';
-        zone.appendChild(empty);
-      }
-      if (hasCards && empty) empty.remove();
-    }
-
-    document.querySelectorAll('.stage').forEach(stage => {
-      stage.addEventListener('dragover', e => {
-        e.preventDefault();
-        stage.classList.add('drag-over');
-      });
-      stage.addEventListener('dragleave', () => stage.classList.remove('drag-over'));
-      stage.addEventListener('drop', e => {
-        e.preventDefault();
-        stage.classList.remove('drag-over');
-        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-        const zone = stage.querySelector('.dropzone');
-        zone.appendChild(createCardElement(data, false));
-        ensureEmptyState(zone);
-        generateSummary();
-      });
-    });
-
-    function getBoardData() {
-      const stages = ['Freshman', 'Sophomore', 'Junior', 'Senior'];
-      const data = {};
-      stages.forEach(stage => {
-        data[stage] = Array.from(document.querySelectorAll(`#stage-${stage} .card`)).map(el => ({
-          title: el.dataset.title,
-          type: el.dataset.type,
-          desc: el.dataset.desc,
-          tags: JSON.parse(el.dataset.tags || '[]')
-        }));
-      });
-      return data;
-    }
-
-    function generateSummary() {
-      const data = getBoardData();
-      const lines = [];
+    function showSummary() {
+      var lines = [];
       lines.push('Sport Pathway Adventure Builder');
-      lines.push(`Adventure: ${currentAdventureTitle}`);
-      lines.push(`Persona: ${persona.value}`);
+      lines.push('Adventure: ' + currentTitle);
+      lines.push('Mode: ' + (currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience'));
+      lines.push('Viewpoint: ' + currentViewpoint);
       lines.push('');
-      Object.entries(data).forEach(([stage, cards]) => {
-        lines.push(`${stage}:`);
-        if (!cards.length) lines.push('  - No cards placed yet');
-        cards.forEach(card => lines.push(`  - ${card.title} [${typeLabel(card.type)}]${card.tags.length ? ' | tags: ' + card.tags.join(', ') : ''}`));
+
+      STAGES[currentMode].forEach(function(stage, index) {
+        lines.push(stage[0] + ':');
+        if (board[index].length === 0) {
+          lines.push('  - No cards placed yet');
+        } else {
+          board[index].forEach(function(card) {
+            lines.push('  - ' + card.title + ' [' + typeLabel(card.type) + ']');
+          });
+        }
         lines.push('');
       });
 
-      const allCards = Object.values(data).flat();
-      const barriers = allCards.filter(c => c.type === 'barrier').map(c => c.title);
-      const unlocks = allCards.filter(c => c.type === 'connector').map(c => c.title);
-      const tests = allCards.filter(c => c.type === 'experimental' || c.type === 'custom').map(c => c.title);
-      const recurringTags = countTags(allCards);
+      if (currentMode === 'experience') {
+        lines.push('Across the Student Journey:');
+        if (throughlineBoard.length === 0) {
+          lines.push('  - No cards placed yet');
+        } else {
+          throughlineBoard.forEach(function(card) {
+            lines.push('  - ' + card.title + ' [' + typeLabel(card.type) + ']');
+          });
+        }
+        lines.push('');
+      }
 
-      lines.push('Discussion prompts:');
-      lines.push('- What should Boise State test next?');
-      lines.push('- What would make this pathway feel coherent to a student?');
-      lines.push('- Which experience changes the trajectory of the student?');
-      lines.push('- What barriers remain unresolved?');
+      lines.push(currentMode === 'roadmap' ? 'Discussion prompts:' : 'Experience prompts:');
+      if (currentMode === 'roadmap') {
+        lines.push('- What should we test first?');
+        lines.push('- What requires partnership or additional support?');
+        lines.push('- What belongs later because it needs more infrastructure?');
+      } else {
+        lines.push('- What would make this experience coherent for a student?');
+        lines.push('- What is missing from this pathway?');
+        lines.push('- What experience changes the trajectory of the student?');
+      }
 
-      document.getElementById('shareText').value = lines.join('\n');
-
-      renderSummaryGrid({ barriers, unlocks, tests, recurringTags });
+      $('shareText').value = lines.join('\n');
+      renderSummaryBoxes();
+      $('summaryPanel').style.display = 'block';
+      $('summaryPanel').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function countTags(cards) {
-      const counts = {};
-      cards.forEach(card => (card.tags || []).forEach(tag => counts[tag] = (counts[tag] || 0) + 1));
-      return Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
-    }
-
-    function renderSummaryGrid({ barriers, unlocks, tests, recurringTags }) {
-      const grid = document.getElementById('summaryGrid');
-      const boxes = [
-        ['Barriers surfaced', barriers],
-        ['Foundational unlocks', unlocks],
-        ['Ideas to test next', tests],
-        ['Recurring themes', recurringTags.map(([tag, count]) => `${tag} (${count})`)]
+    function renderSummaryBoxes() {
+      var allCards = [];
+      board.forEach(function(list) { allCards = allCards.concat(list); });
+      allCards = allCards.concat(throughlineBoard);
+      var groups = [
+        ['Existing Programs', allCards.filter(function(card) { return card.type === 'existing'; })],
+        ['Experiences', allCards.filter(function(card) { return card.type === 'experience'; })],
+        ['Test Ideas', allCards.filter(function(card) { return card.type === 'test' || card.type === 'custom'; })],
+        ['Connectors', allCards.filter(function(card) { return card.type === 'connector'; })]
       ];
-      grid.innerHTML = boxes.map(([title, items]) => `
-        <div class="summary-box">
-          <h3>${escapeHtml(title)}</h3>
-          <ul>${items.length ? items.map(i => `<li>${escapeHtml(i)}</li>`).join('') : '<li>No items yet</li>'}</ul>
-        </div>
-      `).join('');
+      var grid = $('summaryGrid');
+      grid.textContent = '';
+      groups.forEach(function(group) {
+        var box = document.createElement('div');
+        box.className = 'summary-box';
+        var h = document.createElement('h3');
+        h.textContent = group[0];
+        var ul = document.createElement('ul');
+        if (group[1].length === 0) {
+          var li = document.createElement('li');
+          li.textContent = 'No items yet';
+          ul.appendChild(li);
+        } else {
+          group[1].forEach(function(card) {
+            var item = document.createElement('li');
+            item.textContent = card.title;
+            ul.appendChild(item);
+          });
+        }
+        box.appendChild(h);
+        box.appendChild(ul);
+        grid.appendChild(box);
+      });
     }
 
     function copySummary() {
-      const text = document.getElementById('shareText');
-      if (!text.value) generateSummary();
-      text.select();
+      $('shareText').select();
       document.execCommand('copy');
     }
 
+    function printCurrentPage() {
+      try {
+        window.focus();
+        window.print();
+      } catch (error) {
+        alert('If the print dialog does not open in preview, use Open Print-Friendly View or your browser print command after deployment.');
+      }
+    }
+
+    function openPrintView() {
+      showSummary();
+      var win = window.open('', '_blank');
+      if (!win) {
+        alert('Pop-up blocked. Allow pop-ups for this page or use the browser print command.');
+        return;
+      }
+
+      var html = '';
+      html += '<!DOCTYPE html><html><head><title>' + currentTitle + '</title>';
+      html += '<style>';
+      html += 'body{font-family:Arial,Helvetica,sans-serif;color:#16324f;margin:24px;}';
+      html += 'h1{margin-bottom:4px;} h2{margin-top:22px;border-bottom:1px solid #d8d2c5;padding-bottom:6px;}';
+      html += '.meta{color:#627084;margin-bottom:18px;}';
+      html += '.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}';
+      html += '.stage{border:1px solid #d8d2c5;border-radius:12px;padding:12px;break-inside:avoid;}';
+      html += '.card{border:1px solid #d8d2c5;border-left:6px solid #3c9d6b;border-radius:10px;padding:8px;margin:8px 0;}';
+      html += '.card strong{display:block;} .small{color:#627084;font-size:12px;}';
+      html += '.through{margin-top:18px;border:1px solid #d8d2c5;border-radius:12px;padding:12px;}';
+      html += '@media print{button{display:none}.grid{grid-template-columns:repeat(4,1fr)}}';
+      html += '</style></head><body>';
+      html += '<button onclick="window.print()">Print / Save PDF</button>';
+      html += '<h1>Sport Pathway Adventure Builder</h1>';
+      html += '<div class="meta"><strong>Adventure:</strong> ' + safeText(currentTitle) + '<br><strong>Mode:</strong> ' + (currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience') + '<br><strong>Viewpoint:</strong> ' + safeText(currentViewpoint) + '</div>';
+      html += '<div class="grid">';
+      STAGES[currentMode].forEach(function(stage, index) {
+        html += '<div class="stage"><h2>' + safeText(stage[0]) + '</h2><p class="small">' + safeText(stage[1]) + '</p>';
+        if (board[index].length === 0) {
+          html += '<p class="small">No cards placed yet</p>';
+        } else {
+          board[index].forEach(function(card) {
+            html += '<div class="card"><strong>' + safeText(card.title) + '</strong><span class="small">' + safeText(typeLabel(card.type)) + '</span></div>';
+          });
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      if (currentMode === 'experience') {
+        html += '<div class="through"><h2>Across the Student Journey</h2>';
+        if (throughlineBoard.length === 0) {
+          html += '<p class="small">No cards placed yet</p>';
+        } else {
+          throughlineBoard.forEach(function(card) {
+            html += '<div class="card"><strong>' + safeText(card.title) + '</strong><span class="small">' + safeText(typeLabel(card.type)) + '</span></div>';
+          });
+        }
+        html += '</div>';
+      }
+      html += '<h2>Summary Text</h2><pre>' + safeText($('shareText').value) + '</pre>';
+      html += '</body></html>';
+
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+    }
+
+    function safeText(value) {
+      return String(value).replace(/[&<>"']/g, function(character) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character];
+      });
+    }
+
     function downloadSummary() {
-      if (!document.getElementById('shareText').value) generateSummary();
-      const blob = new Blob([document.getElementById('shareText').value], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      var blob = new Blob([$('shareText').value], { type: 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
       a.href = url;
-      a.download = 'sport-pathway-roadmap-summary.txt';
+      a.download = currentMode === 'roadmap' ? 'sport-roadmap-summary.txt' : 'sport-experience-summary.txt';
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     }
 
-    function startNewAdventure() {
-      if (!confirm('Start a new adventure? Current roadmap work will be cleared.')) return;
-
-      document.querySelectorAll('.dropzone').forEach(zone => {
-        zone.innerHTML = '<div class="empty">Drag cards here</div>';
-      });
-
-      document.getElementById('shareText').value = '';
-      document.getElementById('summaryGrid').innerHTML = '';
-
-      document.getElementById('builderApp').style.display = 'none';
-      document.getElementById('introFlow').style.display = 'block';
-
-      activeLens = 'all';
-      lensFilter.value = 'all';
-      renderBank();
-    }
-
     function resetBoard() {
-      if (!confirm('Clear the current roadmap?')) return;
-      document.querySelectorAll('.dropzone').forEach(zone => {
-        zone.innerHTML = '<div class="empty">Drag cards here</div>';
+      board = [[], [], [], []];
+      throughlineBoard = [];
+      selectedCard = null;
+      updateSelectedBox();
+      renderBoard();
+      renderThroughline();
+      $('summaryPanel').style.display = 'none';
+    }
+
+    function startNewAdventure() {
+      resetBoard();
+      $('builderApp').style.display = 'none';
+      $('summaryPanel').style.display = 'none';
+      $('introFlow').style.display = 'block';
+      $('setupScreen').style.display = 'none';
+      $('modeScreen').style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      $('roadmapButton').addEventListener('click', function() { openMode('roadmap'); });
+      $('experienceButton').addEventListener('click', function() { openMode('experience'); });
+      $('beginButton').addEventListener('click', beginAdventure);
+      $('backButton').addEventListener('click', backToStart);
+      $('typeFilter').addEventListener('change', renderCardBank);
+      $('searchCards').addEventListener('input', renderCardBank);
+      $('addCustomButton').addEventListener('click', addCustomCard);
+      $('clearCustomButton').addEventListener('click', clearCustomCardForm);
+      $('shareButton').addEventListener('click', showSummary);
+      $('newButton').addEventListener('click', startNewAdventure);
+      $('resetButton').addEventListener('click', resetBoard);
+      $('refreshSummaryButton').addEventListener('click', showSummary);
+      $('copySummaryButton').addEventListener('click', copySummary);
+      $('downloadSummaryButton').addEventListener('click', downloadSummary);
+      $('printButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        printCurrentPage();
       });
-      document.getElementById('shareText').value = '';
-      document.getElementById('summaryGrid').innerHTML = '';
-    }
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>'"]/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[c]));
-    }
-
-    function inferLenses(card) {
-      const tags = (card.tags || []).join(' ').toLowerCase();
-      const type = card.type;
-      const lenses = new Set();
-      if (type === 'barrier') lenses.add('barrier');
-      if (/freshman|onboarding|discovery|visibility|pathway|certificate/.test(tags)) lenses.add('exploration');
-      if (/belonging|navigation|advising|staffing|scale/.test(tags)) lenses.add('belonging');
-      if (/teamwork|skills|communication|technology|media|portfolio/.test(tags)) lenses.add('skills');
-      if (/career|transition|internship/.test(tags)) lenses.add('career');
-      if (/internship|project|research|experience|community/.test(tags)) lenses.add('experience');
-      if (/reflection|integration|portfolio/.test(tags)) lenses.add('reflection');
-      if (/leadership|coaching/.test(tags)) lenses.add('leadership');
-      if (/mentoring|network|alumni/.test(tags)) lenses.add('network');
-      return lenses.size ? Array.from(lenses) : ['exploration'];
-    }
-
-    initialCards.forEach(card => { if (!card.lenses) card.lenses = inferLenses(card); });
-
-    typeFilter.addEventListener('change', renderBank);
-    lensFilter.addEventListener('change', () => {
-      activeLens = lensFilter.value;
-      renderBank();
+      $('printViewButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        openPrintView();
+      });
     });
-    searchCards.addEventListener('input', renderBank);
-    persona.addEventListener('change', () => {
-      personaDisplay.textContent = persona.value;
-      generateSummary();
-    });
-
-    renderBank();
-    generateSummary();
   </script>
 </body>
 </html>
