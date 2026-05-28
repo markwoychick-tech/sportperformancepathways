@@ -136,6 +136,7 @@
       box-shadow: 0 5px 14px rgba(22,50,79,0.08);
     }
 
+    .card:hover { box-shadow: 0 7px 18px rgba(22,50,79,0.13); }
     .card h3 { margin: 0 0 5px; font-size: 0.95rem; }
     .card p { margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.35; }
 
@@ -146,7 +147,14 @@
     .type-custom { border-left-color: var(--purple); }
 
     .tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-    .tag { font-size: 0.68rem; font-weight: 700; background: #eef2f4; border: 1px solid #dde5e8; padding: 3px 7px; border-radius: 999px; }
+    .tag, .pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: #eef2f4;
+      border: 1px solid #dde5e8;
+      padding: 3px 7px;
+      border-radius: 999px;
+    }
 
     .selected-card {
       border: 2px solid var(--green);
@@ -161,6 +169,24 @@
       grid-template-columns: repeat(4, minmax(190px, 1fr));
       gap: 14px;
     }
+
+    .stage {
+      min-height: 460px;
+      background: #fbfaf6;
+      border: 2px dashed #cfc8ba;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .stage.drag-over, .throughline.drag-over {
+      background: #eef8f0;
+      border-color: var(--green);
+    }
+
+    .stage h2 { margin: 0; font-size: 1.1rem; }
+    .prompt { margin: 6px 0 12px; color: var(--muted); font-size: 0.8rem; line-height: 1.35; min-height: 42px; }
+    .stage-cards { display: grid; gap: 10px; }
+    .empty { border: 1px dashed var(--line); border-radius: 14px; padding: 14px; color: var(--muted); text-align: center; font-size: 0.83rem; }
 
     .throughline {
       margin-top: 16px;
@@ -180,29 +206,53 @@
       min-height: 90px;
     }
 
-    .throughline-cards .card {
-      width: min(280px, 100%);
-    }
-
-    .stage {
-      min-height: 460px;
-      background: #fbfaf6;
-      border: 2px dashed #cfc8ba;
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    .stage h2 { margin: 0; font-size: 1.1rem; }
-    .prompt { margin: 6px 0 12px; color: var(--muted); font-size: 0.8rem; line-height: 1.35; min-height: 42px; }
-    .stage-cards { display: grid; gap: 10px; }
-    .empty { border: 1px dashed var(--line); border-radius: 14px; padding: 14px; color: var(--muted); text-align: center; font-size: 0.83rem; }
+    .throughline-cards .card { width: min(280px, 100%); }
 
     .summary-panel { margin: 0 22px 24px; padding: 18px; }
     #shareText { margin-top: 12px; min-height: 160px; font-family: monospace; font-size: 0.82rem; }
     .summary-box ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.88rem; }
 
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 24, 40, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      z-index: 1000;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      width: min(720px, 100%);
+      max-height: 86vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 22px 60px rgba(0,0,0,0.28);
+      padding: 22px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      background: #e6e1d8;
+      color: var(--ink);
+      padding: 6px 10px;
+    }
+
+    .modal h2 { margin: 0 42px 8px 0; }
+    .modal .meta { color: var(--muted); margin-bottom: 16px; }
+    .modal-section { border-top: 1px solid var(--line); padding-top: 13px; margin-top: 13px; }
+    .modal-section h3 { margin: 0 0 6px; font-size: 0.95rem; }
+    .modal-section p { margin: 0; line-height: 1.45; color: #33465a; }
+
     @media print {
-      header, .sidebar, #introFlow, .no-print { display: none !important; }
+      header, .sidebar, #introFlow, .no-print, .modal-overlay { display: none !important; }
       body { background: white; }
       .app { display: block; padding: 0; }
       .workspace, .summary-panel { box-shadow: none; border: none; margin: 0; }
@@ -273,13 +323,13 @@
   <main class="app" id="builderApp" style="display:none;">
     <aside class="sidebar">
       <div class="section-title">How to build</div>
-      <p class="small-note">Select a card, then click the stage where it belongs. Add custom cards when something is missing.</p>
+      <p class="small-note">Select a card, then click the stage where it belongs. You can also drag cards into a stage.</p>
       <div id="selectedCardBox" class="selected-card" style="display:none;"></div>
 
       <div class="section-title">Browse cards</div>
       <select id="typeFilter">
         <option value="all">All cards</option>
-        <option value="existing" id="existingFilterOption">Existing Programs</option>
+        <option value="existing">Existing Programs</option>
         <option value="experience">Experiences</option>
         <option value="test">Test Ideas</option>
         <option value="connector">Connectors</option>
@@ -332,34 +382,140 @@
       <button id="refreshSummaryButton">Refresh summary</button>
       <button id="copySummaryButton" class="secondary">Copy summary</button>
       <button id="downloadSummaryButton" class="secondary">Download text</button>
-      <button id="printButton" class="gold" onclick="printCurrentPage()">Print / Save PDF</button>
+      <button id="printButton" class="gold">Print / Save PDF</button>
       <button id="printViewButton" class="gold">Open Print-Friendly View</button>
     </div>
     <textarea id="shareText" readonly placeholder="Your summary will appear here."></textarea>
     <div class="summary-grid" id="summaryGrid"></div>
   </section>
 
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" id="infoModal">
+      <button class="modal-close" id="modalCloseButton">X</button>
+      <h2 id="modalTitle"></h2>
+      <div class="meta" id="modalMeta"></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
   <script>
     var CARDS = [
-      { title: 'Sports Passport', type: 'test', modes: ['roadmap', 'experience'], desc: 'Passport-style exploration model that could help students discover opportunities and track participation.', tags: ['visibility', 'exploration'] },
-      { title: 'Shift Group / Life After Sports Pilot', type: 'test', modes: ['roadmap', 'experience'], desc: 'Potential senior-focused pilot for career transition, networking, and identity after sport.', tags: ['career', 'transition'] },
-      { title: 'Bronco Link Expansion', type: 'connector', modes: ['roadmap', 'experience'], desc: 'Alumni connections for mentoring, internships, and career conversations.', tags: ['network', 'career'] },
-      { title: 'Map Existing Sport Opportunities', type: 'test', modes: ['roadmap'], desc: 'Create a clearer inventory of current programs, courses, certificates, and experiences.', tags: ['visibility', 'mapping'] },
-      { title: 'Meet with Bronco Life about SDF', type: 'test', modes: ['roadmap'], desc: 'Near-term working session to connect Sport Impact planning with student-athlete support needs.', tags: ['partnership', 'pilot'] },
-      { title: 'Sport Impact Certificate', type: 'existing', modes: ['experience'], desc: 'Stackable certificate launching with a sport impact focus.', tags: ['certificate', 'pathway'] },
-      { title: 'Sport-Integrated Learning', type: 'connector', modes: ['experience'], desc: 'Bridge course or model that helps students translate sport experiences into reflection, skills, and career evidence.', tags: ['reflection', 'career'] },
-      { title: 'TEAMS Certificate', type: 'existing', modes: ['experience'], desc: 'Existing certificate with potential sport pathway connections.', tags: ['teamwork', 'leadership'] },
-      { title: 'Sport Information and Culture', type: 'existing', modes: ['experience'], desc: 'Communication, media, and culture opportunity connected to sport information pathways.', tags: ['media', 'communication', 'culture'] },
-      { title: 'eSports Certificate', type: 'existing', modes: ['experience'], desc: 'Existing certificate connecting sport, gaming, media, and technology interests.', tags: ['technology', 'gaming'] },
-      { title: 'Sport Coaching Certificate', type: 'existing', modes: ['experience'], desc: 'Certificate connected to coaching, development, and leadership.', tags: ['coaching', 'leadership'] },
-      { title: 'COID 493 Internship', type: 'experience', modes: ['experience'], desc: 'Internship structure that could support applied sport-related learning.', tags: ['internship', 'career'] },
-      { title: 'ACAD 101', type: 'existing', modes: ['experience'], desc: 'Incoming student course that could introduce sport pathways earlier.', tags: ['freshman', 'onboarding'] },
-      { title: 'Bronco 197', type: 'existing', modes: ['experience'], desc: 'Incoming athlete course that could introduce student-athletes to sport pathway options.', tags: ['athletes', 'onboarding'] },
-      { title: 'University Foundations Connection', type: 'test', modes: ['roadmap', 'experience'], desc: 'Use UF courses to connect sport, identity, community, and career exploration.', tags: ['integration', 'exploration'] },
-      { title: 'Vertically Integrated Projects', type: 'experience', modes: ['roadmap', 'experience'], desc: 'Multi-year applied projects connected to sport, data, media, health, or community impact.', tags: ['project', 'experience'] },
-      { title: 'Credit for Prior Learning', type: 'connector', modes: ['experience'], desc: 'Recognize relevant experience and reduce friction for students with existing skills or applied backgrounds.', tags: ['credit', 'access'] },
-      { title: 'Internship / Practicum Pathway', type: 'experience', modes: ['experience'], desc: 'Applied placement that helps students test interests and build career evidence.', tags: ['internship', 'experience'] },
-      { title: 'Peer Mentor Network', type: 'connector', modes: ['roadmap', 'experience'], desc: 'Students help other students find options, reflect on experiences, and navigate the pathway.', tags: ['mentoring', 'navigation'] }
+      {
+        title: 'Sports Passport', type: 'test', modes: ['roadmap', 'experience'],
+        desc: 'Passport-style exploration model that could help students discover opportunities and track participation.',
+        what: 'Experiential learning program designed to immerse students in the vibrant world of sports, wellness, and recreation.',
+        why: 'This 1-credit course encourages students to explore the role of sport in society. Through active participation in sporting events, athletic workshops, and community-based sports initiatives, students will reflect on how sport fosters teamwork, leadership, well-being, and cultural connection.',
+        status: 'Pilot opportunity', connections: '', examples: '', tags: ['visibility', 'exploration']
+      },
+      {
+        title: 'Shift Group / Life After Sports Pilot', type: 'test', modes: ['roadmap', 'experience'],
+        desc: 'Potential senior-focused pilot for career transition, networking, and identity after sport.',
+        what: 'Create a Boise State version of the Bowling Green design your life course for student athletes.',
+        why: '', status: 'Pilot opportunity', connections: '', examples: '', tags: ['career', 'transition']
+      },
+      {
+        title: 'Bronco Link Expansion', type: 'connector', modes: ['roadmap', 'experience'],
+        desc: 'Alumni connections for mentoring, internships, and career conversations.',
+        what: "BroncoLink is Boise State University's official online career, networking, and mentorship platform.",
+        why: 'It connects current students and alumni with experienced professionals, employers, and parents within the Bronco Nation community for career advice, job referrals, and professional mentoring.',
+        status: 'Existing program', connections: '', examples: '', tags: ['network', 'career']
+      },
+      {
+        title: 'Map Existing Sport Opportunities', type: 'test', modes: ['roadmap'],
+        desc: 'Create a clearer inventory of current programs, courses, certificates, and experiences.',
+        what: '', why: '', status: 'Under discussion', connections: '', examples: '', tags: ['visibility', 'mapping']
+      },
+      {
+        title: 'Meet with Bronco Life about SDF', type: 'test', modes: ['roadmap'],
+        desc: 'Near-term working session to connect Sport Impact planning with student-athlete support needs.',
+        what: '', why: '', status: 'Under discussion', connections: '', examples: '', tags: ['partnership', 'pilot']
+      },
+      {
+        title: 'Sport Impact Certificate', type: 'existing', modes: ['experience'],
+        desc: 'Stackable certificate launching with a sport impact focus.',
+        what: '12-credit certificate, including SPORTIM 350 Beyond the Game: AI, Expression & Athlete Identity; SPORTIM 351 Sport Entrepreneurship & Community Impact: Building for Change Through Play; TEAM 303 Teamwork in the Digital Age; IPS 391 Work/Sport Integrated Learning; and IPS 392 Readings.',
+        why: 'Designed for students who want to turn the sport experience into career skills.',
+        status: 'Existing program', connections: '', examples: '', tags: ['certificate', 'pathway']
+      },
+      {
+        title: 'Sport-Integrated Learning', type: 'connector', modes: ['experience'],
+        desc: 'Bridge course or model that helps students translate sport experiences into reflection, skills, and career evidence.',
+        what: 'Develop specific sport focus within Work Integrated Learning course.',
+        why: 'Explicit connection to Sport Impact Certificate and eventually a stackable certificate major.',
+        status: 'Pilot opportunity', connections: '', examples: '', tags: ['reflection', 'career']
+      },
+      {
+        title: 'Applied Teamwork Certificate', type: 'existing', modes: ['experience'],
+        desc: 'Existing certificate with potential sport pathway connections.',
+        what: 'Learn how to adapt and thrive in dynamic, fast-changing and globalized work settings, effectively navigating the complexities of diverse teams and evolving workplace demands.',
+        why: 'Strong connection and appeal to student athletes and students interested in studying sport.',
+        status: 'Existing program', connections: '', examples: '', tags: ['teamwork', 'leadership']
+      },
+      {
+        title: 'Sport Information and Culture', type: 'existing', modes: ['experience'],
+        desc: 'Communication, media, and culture opportunity connected to sport information pathways.',
+        what: '', why: '', status: 'Existing program', connections: '', examples: '', tags: ['media', 'communication', 'culture']
+      },
+      {
+        title: 'eSports Certificate', type: 'existing', modes: ['experience'],
+        desc: 'Existing certificate connecting sport, gaming, media, and technology interests.',
+        what: '', why: '', status: 'Existing program', connections: '', examples: '', tags: ['technology', 'gaming']
+      },
+      {
+        title: 'Sport Coaching Certificate', type: 'existing', modes: ['experience'],
+        desc: 'Certificate connected to coaching, development, and leadership.',
+        what: '', why: '', status: 'Existing program', connections: '', examples: '', tags: ['coaching', 'leadership']
+      },
+      {
+        title: 'COID 493 Internship', type: 'experience', modes: ['experience'],
+        desc: 'Internship structure that could support applied sport-related learning.',
+        what: 'Internship opportunity that is currently popular with student athletes.',
+        why: 'Internships are a key option to develop networking, employment, and community ties for students.',
+        status: 'Existing program', connections: '', examples: '', tags: ['internship', 'career']
+      },
+      {
+        title: 'ACAD 101', type: 'existing', modes: ['experience'],
+        desc: 'Incoming student course that could introduce sport pathways earlier.',
+        what: 'Course to help first-year and transfer students develop the skills, attitudes, and behaviors required to succeed in college.',
+        why: 'Helps students transition to campus and college life.',
+        status: 'Existing program', connections: '', examples: '', tags: ['freshman', 'onboarding']
+      },
+      {
+        title: 'Bronco 197', type: 'existing', modes: ['experience'],
+        desc: 'Incoming athlete course that could introduce student-athletes to sport pathway options.',
+        what: 'Special topics course for student athletes.',
+        why: 'Helps students transition to student-athlete life.',
+        status: 'Existing program', connections: '', examples: '', tags: ['athletes', 'onboarding']
+      },
+      {
+        title: 'University Foundations Connection', type: 'test', modes: ['roadmap', 'experience'],
+        desc: 'Use UF courses to connect sport, identity, community, and career exploration.',
+        what: 'UF 100 courses introduce new students to college-level academics by focusing on critical inquiry and oral communication through rotating, engaging thematic topics.',
+        why: 'Creating a sport-focused UF 100 course could help attract and retain students and introduce them to sport-related courses, certificates, and majors at Boise State.',
+        status: 'Under discussion', connections: '', examples: '', tags: ['integration', 'exploration']
+      },
+      {
+        title: 'Vertically Integrated Projects', type: 'experience', modes: ['roadmap', 'experience'],
+        desc: 'Multi-year applied projects connected to sport, data, media, health, or community impact.',
+        what: '200-, 400-, and 500-level courses at Boise State University allow undergraduate and graduate students from any major to join interdisciplinary faculty-led teams. Students earn 1-2 credits while gaining hands-on, real-world experience on long-term research and creative projects.',
+        why: 'Create a pipeline for student-athletes and students interested in sport to explore interests through storytelling.',
+        status: 'Pilot opportunity', connections: '', examples: '', tags: ['project', 'experience']
+      },
+      {
+        title: 'Credit for Prior Learning', type: 'connector', modes: ['experience'],
+        desc: 'Recognize relevant experience and reduce friction for students with existing skills or applied backgrounds.',
+        what: '', why: '', status: 'Existing program', connections: '', examples: '', tags: ['credit', 'access']
+      },
+      {
+        title: 'Internship / Practicum Pathway', type: 'experience', modes: ['experience'],
+        desc: 'Applied placement that helps students test interests and build career evidence.',
+        what: '', why: '', status: 'Existing program', connections: '', examples: '', tags: ['internship', 'experience']
+      },
+      {
+        title: 'Peer Mentor Network', type: 'connector', modes: ['roadmap', 'experience'],
+        desc: 'Students help other students find options, reflect on experiences, and navigate the pathway.',
+        what: '', why: '', status: 'Pilot opportunity', connections: '', examples: '', tags: ['mentoring', 'navigation']
+      }
     ];
 
     var STAGES = {
@@ -387,13 +543,7 @@
     function $(id) { return document.getElementById(id); }
 
     function typeLabel(type) {
-      var labels = {
-        existing: 'Existing Program',
-        experience: 'Experience',
-        test: 'Test Idea',
-        connector: 'Connector',
-        custom: 'Custom'
-      };
+      var labels = { existing: 'Existing Program', experience: 'Experience', test: 'Test Idea', connector: 'Connector', custom: 'Custom' };
       return labels[type] || 'Card';
     }
 
@@ -416,7 +566,6 @@
     }
 
     function beginAdventure() {
-      updateTypeFilterOptions();
       currentTitle = $('adventureTitle').value.trim();
       if (!currentTitle) currentTitle = currentMode === 'roadmap' ? 'Untitled Roadmap' : 'Untitled Experience';
       currentViewpoint = currentMode === 'experience' ? $('studentType').value : 'Institutional view';
@@ -430,10 +579,17 @@
       $('modeDisplay').textContent = currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience';
       $('viewpointDisplay').textContent = currentViewpoint;
       $('adventureDisplay').textContent = currentTitle;
+      updateTypeFilterOptions();
       updateSelectedBox();
       renderBoard();
       renderThroughline();
       renderCardBank();
+    }
+
+    function updateTypeFilterOptions() {
+      var existingOption = $('typeFilter').querySelector('option[value="existing"]');
+      if (existingOption) existingOption.style.display = currentMode === 'roadmap' ? 'none' : 'block';
+      if (currentMode === 'roadmap' && $('typeFilter').value === 'existing') $('typeFilter').value = 'all';
     }
 
     function updateSelectedBox() {
@@ -445,15 +601,6 @@
       }
       box.style.display = 'block';
       box.textContent = 'Selected: ' + selectedCard.title + '. Click a stage to place it.';
-    }
-
-    function updateTypeFilterOptions() {
-      var option = $('existingFilterOption');
-      if (!option) return;
-      option.style.display = currentMode === 'roadmap' ? 'none' : 'block';
-      if (currentMode === 'roadmap' && $('typeFilter').value === 'existing') {
-        $('typeFilter').value = 'all';
-      }
     }
 
     function renderCardBank() {
@@ -486,6 +633,7 @@
     function makeCardElement(card, selectable) {
       var div = document.createElement('div');
       div.className = 'card type-' + card.type;
+
       if (selectable) {
         div.draggable = true;
         div.addEventListener('dragstart', function(event) {
@@ -511,11 +659,21 @@
       });
       div.appendChild(tagRow);
 
+      var infoButton = document.createElement('button');
+      infoButton.className = 'secondary';
+      infoButton.textContent = 'More Info';
+      infoButton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        openInfoModal(card);
+      });
+      div.appendChild(infoButton);
+
       if (selectable) {
         var selectButton = document.createElement('button');
         selectButton.className = 'secondary';
         selectButton.textContent = 'Select card';
-        selectButton.addEventListener('click', function() {
+        selectButton.addEventListener('click', function(event) {
+          event.stopPropagation();
           selectedCard = card;
           updateSelectedBox();
         });
@@ -533,51 +691,6 @@
       return div;
     }
 
-    function renderThroughline() {
-      var section = $('throughlineSection');
-      var list = $('throughlineCards');
-      if (currentMode !== 'experience') {
-        section.style.display = 'none';
-        return;
-      }
-      section.style.display = 'block';
-      list.textContent = '';
-      if (throughlineBoard.length === 0) {
-        var empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'Select or drag cards here if they span the full student journey.';
-        list.appendChild(empty);
-      } else {
-        throughlineBoard.forEach(function(card) {
-          list.appendChild(makeCardElement(card, false));
-        });
-      }
-
-      section.ondragover = function(event) {
-        event.preventDefault();
-        section.style.borderColor = 'var(--green)';
-        section.style.background = '#eef8f0';
-      };
-      section.ondragleave = function() {
-        section.style.borderColor = '#cfc8ba';
-        section.style.background = '#fbfaf6';
-      };
-      section.ondrop = function(event) {
-        event.preventDefault();
-        section.style.borderColor = '#cfc8ba';
-        section.style.background = '#fbfaf6';
-        var droppedCard = JSON.parse(event.dataTransfer.getData('text/plain'));
-        placeThroughlineCard(droppedCard);
-      };
-      section.onclick = function() {
-        if (selectedCard) {
-          placeThroughlineCard(selectedCard);
-          selectedCard = null;
-          updateSelectedBox();
-        }
-      };
-    }
-
     function renderBoard() {
       var container = $('board');
       container.textContent = '';
@@ -587,17 +700,14 @@
         column.addEventListener('click', function() { placeCard(index); });
         column.addEventListener('dragover', function(event) {
           event.preventDefault();
-          column.style.borderColor = 'var(--green)';
-          column.style.background = '#eef8f0';
+          column.classList.add('drag-over');
         });
         column.addEventListener('dragleave', function() {
-          column.style.borderColor = '#cfc8ba';
-          column.style.background = '#fbfaf6';
+          column.classList.remove('drag-over');
         });
         column.addEventListener('drop', function(event) {
           event.preventDefault();
-          column.style.borderColor = '#cfc8ba';
-          column.style.background = '#fbfaf6';
+          column.classList.remove('drag-over');
           var droppedCard = JSON.parse(event.dataTransfer.getData('text/plain'));
           placeSpecificCard(index, droppedCard);
         });
@@ -628,6 +738,48 @@
       });
     }
 
+    function renderThroughline() {
+      var section = $('throughlineSection');
+      var list = $('throughlineCards');
+      if (currentMode !== 'experience') {
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      list.textContent = '';
+      if (throughlineBoard.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'Select or drag cards here if they span the full student journey.';
+        list.appendChild(empty);
+      } else {
+        throughlineBoard.forEach(function(card) {
+          list.appendChild(makeCardElement(card, false));
+        });
+      }
+
+      section.ondragover = function(event) {
+        event.preventDefault();
+        section.classList.add('drag-over');
+      };
+      section.ondragleave = function() {
+        section.classList.remove('drag-over');
+      };
+      section.ondrop = function(event) {
+        event.preventDefault();
+        section.classList.remove('drag-over');
+        var droppedCard = JSON.parse(event.dataTransfer.getData('text/plain'));
+        placeThroughlineCard(droppedCard);
+      };
+      section.onclick = function() {
+        if (selectedCard) {
+          placeThroughlineCard(selectedCard);
+          selectedCard = null;
+          updateSelectedBox();
+        }
+      };
+    }
+
     function placeCard(index) {
       if (!selectedCard) return;
       placeSpecificCard(index, selectedCard);
@@ -635,31 +787,33 @@
       updateSelectedBox();
     }
 
+    function placeSpecificCard(index, sourceCard) {
+      var placed = cloneCardForBoard(sourceCard);
+      board[index].push(placed);
+      renderBoard();
+    }
+
     function placeThroughlineCard(sourceCard) {
       if (currentMode !== 'experience') return;
-      var placed = {
-        id: String(Date.now()) + String(Math.random()),
-        title: sourceCard.title,
-        type: sourceCard.type,
-        desc: sourceCard.desc,
-        tags: sourceCard.tags.slice(),
-        modes: sourceCard.modes.slice()
-      };
+      var placed = cloneCardForBoard(sourceCard);
       throughlineBoard.push(placed);
       renderThroughline();
     }
 
-    function placeSpecificCard(index, sourceCard) {
-      var placed = {
+    function cloneCardForBoard(sourceCard) {
+      return {
         id: String(Date.now()) + String(Math.random()),
         title: sourceCard.title,
         type: sourceCard.type,
         desc: sourceCard.desc,
+        what: sourceCard.what || '',
+        why: sourceCard.why || '',
+        status: sourceCard.status || '',
+        connections: sourceCard.connections || '',
+        examples: sourceCard.examples || '',
         tags: sourceCard.tags.slice(),
         modes: sourceCard.modes.slice()
       };
-      board[index].push(placed);
-      renderBoard();
     }
 
     function removeCard(id) {
@@ -681,7 +835,8 @@
         type: $('customType').value,
         modes: [currentMode],
         desc: $('customDesc').value.trim() || 'Participant-generated idea.',
-        tags: tags
+        what: $('customDesc').value.trim() || 'Participant-generated idea.',
+        why: '', status: '', connections: '', examples: '', tags: tags
       };
       CARDS.unshift(card);
       $('customTitle').value = '';
@@ -696,6 +851,59 @@
       $('customDesc').value = '';
       $('customTags').value = '';
       $('customType').value = 'custom';
+    }
+
+    function openInfoModal(card) {
+      $('modalTitle').textContent = card.title;
+      $('modalMeta').textContent = typeLabel(card.type) + (card.status ? ' | ' + card.status : '');
+      var body = $('modalBody');
+      body.textContent = '';
+
+      addModalSection(body, 'Short description', card.desc);
+      addModalSection(body, 'What it is', card.what);
+      addModalSection(body, 'Why it matters', card.why);
+      addModalSection(body, 'Current status', card.status);
+      addModalSection(body, 'Possible connections', card.connections);
+      addModalSection(body, 'Example uses', card.examples);
+
+      if (card.tags && card.tags.length) {
+        var tagSection = document.createElement('div');
+        tagSection.className = 'modal-section';
+        var h = document.createElement('h3');
+        h.textContent = 'Tags';
+        var row = document.createElement('div');
+        row.className = 'tag-row';
+        card.tags.forEach(function(tag) {
+          var pill = document.createElement('span');
+          pill.className = 'pill';
+          pill.textContent = tag;
+          row.appendChild(pill);
+        });
+        tagSection.appendChild(h);
+        tagSection.appendChild(row);
+        body.appendChild(tagSection);
+      }
+
+      $('modalOverlay').classList.add('open');
+      $('modalOverlay').setAttribute('aria-hidden', 'false');
+    }
+
+    function addModalSection(parent, heading, value) {
+      if (!value || !String(value).trim()) return;
+      var section = document.createElement('div');
+      section.className = 'modal-section';
+      var h = document.createElement('h3');
+      h.textContent = heading;
+      var p = document.createElement('p');
+      p.textContent = value;
+      section.appendChild(h);
+      section.appendChild(p);
+      parent.appendChild(section);
+    }
+
+    function closeInfoModal() {
+      $('modalOverlay').classList.remove('open');
+      $('modalOverlay').setAttribute('aria-hidden', 'true');
     }
 
     function showSummary() {
@@ -787,78 +995,6 @@
       document.execCommand('copy');
     }
 
-    function printCurrentPage() {
-      try {
-        window.focus();
-        window.print();
-      } catch (error) {
-        alert('If the print dialog does not open in preview, use Open Print-Friendly View or your browser print command after deployment.');
-      }
-    }
-
-    function openPrintView() {
-      showSummary();
-      var win = window.open('', '_blank');
-      if (!win) {
-        alert('Pop-up blocked. Allow pop-ups for this page or use the browser print command.');
-        return;
-      }
-
-      var html = '';
-      html += '<!DOCTYPE html><html><head><title>' + currentTitle + '</title>';
-      html += '<style>';
-      html += 'body{font-family:Arial,Helvetica,sans-serif;color:#16324f;margin:24px;}';
-      html += 'h1{margin-bottom:4px;} h2{margin-top:22px;border-bottom:1px solid #d8d2c5;padding-bottom:6px;}';
-      html += '.meta{color:#627084;margin-bottom:18px;}';
-      html += '.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}';
-      html += '.stage{border:1px solid #d8d2c5;border-radius:12px;padding:12px;break-inside:avoid;}';
-      html += '.card{border:1px solid #d8d2c5;border-left:6px solid #3c9d6b;border-radius:10px;padding:8px;margin:8px 0;}';
-      html += '.card strong{display:block;} .small{color:#627084;font-size:12px;}';
-      html += '.through{margin-top:18px;border:1px solid #d8d2c5;border-radius:12px;padding:12px;}';
-      html += '@media print{button{display:none}.grid{grid-template-columns:repeat(4,1fr)}}';
-      html += '</style></head><body>';
-      html += '<button onclick="window.print()">Print / Save PDF</button>';
-      html += '<h1>Sport Pathway Adventure Builder</h1>';
-      html += '<div class="meta"><strong>Adventure:</strong> ' + safeText(currentTitle) + '<br><strong>Mode:</strong> ' + (currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience') + '<br><strong>Viewpoint:</strong> ' + safeText(currentViewpoint) + '</div>';
-      html += '<div class="grid">';
-      STAGES[currentMode].forEach(function(stage, index) {
-        html += '<div class="stage"><h2>' + safeText(stage[0]) + '</h2><p class="small">' + safeText(stage[1]) + '</p>';
-        if (board[index].length === 0) {
-          html += '<p class="small">No cards placed yet</p>';
-        } else {
-          board[index].forEach(function(card) {
-            html += '<div class="card"><strong>' + safeText(card.title) + '</strong><span class="small">' + safeText(typeLabel(card.type)) + '</span></div>';
-          });
-        }
-        html += '</div>';
-      });
-      html += '</div>';
-      if (currentMode === 'experience') {
-        html += '<div class="through"><h2>Across the Student Journey</h2>';
-        if (throughlineBoard.length === 0) {
-          html += '<p class="small">No cards placed yet</p>';
-        } else {
-          throughlineBoard.forEach(function(card) {
-            html += '<div class="card"><strong>' + safeText(card.title) + '</strong><span class="small">' + safeText(typeLabel(card.type)) + '</span></div>';
-          });
-        }
-        html += '</div>';
-      }
-      html += '<h2>Summary Text</h2><pre>' + safeText($('shareText').value) + '</pre>';
-      html += '</body></html>';
-
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
-      win.focus();
-    }
-
-    function safeText(value) {
-      return String(value).replace(/[&<>"']/g, function(character) {
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character];
-      });
-    }
-
     function downloadSummary() {
       var blob = new Blob([$('shareText').value], { type: 'text/plain' });
       var url = URL.createObjectURL(blob);
@@ -869,6 +1005,55 @@
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+    }
+
+    function printCurrentPage() {
+      window.focus();
+      window.print();
+    }
+
+    function openPrintView() {
+      showSummary();
+      var win = window.open('', '_blank');
+      if (!win) {
+        alert('Pop-up blocked. Allow pop-ups for this page or use your browser print command.');
+        return;
+      }
+      var html = '';
+      html += '<!DOCTYPE html><html><head><title>' + escapeHtml(currentTitle) + '</title>';
+      html += '<style>body{font-family:Arial,Helvetica,sans-serif;color:#16324f;margin:24px;}h1{margin-bottom:4px;}h2{margin-top:22px;border-bottom:1px solid #d8d2c5;padding-bottom:6px;}.meta{color:#627084;margin-bottom:18px;}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}.stage{border:1px solid #d8d2c5;border-radius:12px;padding:12px;break-inside:avoid;}.card{border:1px solid #d8d2c5;border-left:6px solid #3c9d6b;border-radius:10px;padding:8px;margin:8px 0;}.card strong{display:block}.small{color:#627084;font-size:12px}.through{margin-top:18px;border:1px solid #d8d2c5;border-radius:12px;padding:12px;}@media print{button{display:none}.grid{grid-template-columns:repeat(4,1fr)}}</style>';
+      html += '</head><body><button onclick="window.print()">Print / Save PDF</button>';
+      html += '<h1>Sport Pathway Adventure Builder</h1>';
+      html += '<div class="meta"><strong>Adventure:</strong> ' + escapeHtml(currentTitle) + '<br><strong>Mode:</strong> ' + (currentMode === 'roadmap' ? 'Build the Roadmap' : 'Build the Experience') + '<br><strong>Viewpoint:</strong> ' + escapeHtml(currentViewpoint) + '</div>';
+      html += '<div class="grid">';
+      STAGES[currentMode].forEach(function(stage, index) {
+        html += '<div class="stage"><h2>' + escapeHtml(stage[0]) + '</h2><p class="small">' + escapeHtml(stage[1]) + '</p>';
+        if (board[index].length === 0) html += '<p class="small">No cards placed yet</p>';
+        board[index].forEach(function(card) {
+          html += '<div class="card"><strong>' + escapeHtml(card.title) + '</strong><span class="small">' + escapeHtml(typeLabel(card.type)) + '</span></div>';
+        });
+        html += '</div>';
+      });
+      html += '</div>';
+      if (currentMode === 'experience') {
+        html += '<div class="through"><h2>Across the Student Journey</h2>';
+        if (throughlineBoard.length === 0) html += '<p class="small">No cards placed yet</p>';
+        throughlineBoard.forEach(function(card) {
+          html += '<div class="card"><strong>' + escapeHtml(card.title) + '</strong><span class="small">' + escapeHtml(typeLabel(card.type)) + '</span></div>';
+        });
+        html += '</div>';
+      }
+      html += '<h2>Summary Text</h2><pre>' + escapeHtml($('shareText').value) + '</pre></body></html>';
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(character) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character];
+      });
     }
 
     function resetBoard() {
@@ -905,13 +1090,14 @@
       $('refreshSummaryButton').addEventListener('click', showSummary);
       $('copySummaryButton').addEventListener('click', copySummary);
       $('downloadSummaryButton').addEventListener('click', downloadSummary);
-      $('printButton').addEventListener('click', function(event) {
-        event.preventDefault();
-        printCurrentPage();
+      $('printButton').addEventListener('click', printCurrentPage);
+      $('printViewButton').addEventListener('click', openPrintView);
+      $('modalCloseButton').addEventListener('click', closeInfoModal);
+      $('modalOverlay').addEventListener('click', function(event) {
+        if (event.target === $('modalOverlay')) closeInfoModal();
       });
-      $('printViewButton').addEventListener('click', function(event) {
-        event.preventDefault();
-        openPrintView();
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') closeInfoModal();
       });
     });
   </script>
